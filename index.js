@@ -43,6 +43,7 @@ app.get('/', function(req, res) {
 
 // Your first API endpoint
 app.get('/api/shorturl/:short_url', async function(req, res) {
+  console.log("GET")
   var short_url = req.params.short_url;
       
       console.log(short_url)
@@ -58,6 +59,7 @@ app.get('/api/shorturl/:short_url', async function(req, res) {
 });
 
 app.post('/api/shorturl', async function(req, res) {
+    console.log("POST")
     let originUrl = origin_url = req.body.url;
     originUrl = originUrl.toLowerCase();
 
@@ -70,16 +72,14 @@ app.post('/api/shorturl', async function(req, res) {
           error: 'invalid url'
         })
       }
-      console.log(validateUrl.protocol)
       validateUrl = validateUrl.hostname + validateUrl.pathname;
-      console.log(originUrl);
-      dns.lookup(originUrl, function(err, address) {
+      validateUrl = validateUrl.slice(0, validateUrl.lastIndexOf('/'));
+      console.log(validateUrl);
+      await dns.lookup(validateUrl, function(err, address) {
           if(err){
             return res.json({
               error: 'invalid url'
             })
-          }else{
-            console.log("PASS");
           }
       });
     }catch(e){
@@ -108,10 +108,17 @@ app.post('/api/shorturl', async function(req, res) {
     var trySave = await url.save()
 
     return res.json(trySave);
-    
   
+});
 
-  
+app.get('/test',function(req,res){
+  dns.lookup("fcc-be-boilerplate-project-urlshortener.patarshn.repl.co", function(err, address) {
+          if(err){
+            console.log(err)
+          }else{
+            console.log(address)
+          }
+      });
 });
 
 app.listen(port, function() {
