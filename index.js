@@ -66,17 +66,24 @@ app.post('/api/shorturl', async function(req, res) {
     try{
       validateUrl = new URL(originUrl);
       if(validateUrl.protocol != "https:" && validateUrl.protocol !="http:"){
-        //catch
+        return res.json({
+          error: 'invalid url'
+        })
       }
+      console.log(validateUrl.protocol)
       validateUrl = validateUrl.hostname + validateUrl.pathname;
       console.log(originUrl);
       dns.lookup(originUrl, function(err, address) {
           if(err){
-            //catch
+            return res.json({
+              error: 'invalid url'
+            })
+          }else{
+            console.log("PASS");
           }
       });
     }catch(e){
-      res.json({
+      return res.json({
         error: 'invalid url'
       })
     }
@@ -100,7 +107,7 @@ app.post('/api/shorturl', async function(req, res) {
     url.short_url = short_url;
     var trySave = await url.save()
 
-    res.json(trySave);
+    return res.json(trySave);
     
   
 
